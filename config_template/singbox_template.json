@@ -241,9 +241,7 @@
     {
       "tag": "美国节点",
       "type": "urltest",
-      "outbounds":[
-        "{all}"
-      ],
+      "outbounds": "{all}",
       "filter":[
         {"action":"include","keywords":["🇺🇸|US|us|美国|美|United States"]}
       ]
@@ -253,7 +251,7 @@
       "type": "urltest",
       "outbounds": "{all}",
       "filter":[
-        {"action":"include"}
+        {"action":"exclude","keywords":["网站|地址|剩余|流量|过期|时间|有效"]}
       ]
     },
     {
@@ -261,7 +259,7 @@
       "type": "selector",
       "outbounds": "{all}",
       "filter":[
-        {"action":"include"}
+        {"action":"exclude","keywords":["网站|地址|剩余|流量|过期|时间|有效"]}
       ]
     }
   ],
