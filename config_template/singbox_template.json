@@ -1,270 +1,281 @@
 {
-  "log": {
-    "level": "info",
-    "timestamp": false
-  },
-  "dns": {
-    "servers": [
-      {
-        "tag": "dns_proxy",
-        "address": "h3://1.1.1.1/dns-query",
-        "address_resolver": "dns_resolver",
-        "strategy": "prefer_ipv4",
-        "detour": "proxy"
-      },
-      {
-        "tag": "dns_direct",
-        "address": "local",
-        "strategy": "prefer_ipv4",
-        "detour": "direct"
-      },
-      {
-        "tag": "dns_resolver",
-        "address": "local",
-        "detour": "direct",
-        "strategy": "prefer_ipv4"
-      },
-      {
-        "tag": "dns_success",
-        "address": "rcode://success"
-      },
-      {
-        "tag": "dns_refused",
-        "address": "rcode://refused"
-      },
-      {
-        "tag": "dns_fakeip",
-        "address": "fakeip"
-      }
-    ],
-    "rules": [
-      {
-        "outbound": "any",
-        "server": "dns_resolver"
-      },
-      {
-        "rule_set": "BlockHttpDNS",
-        "rule_set": "geosite-category-ads-all",
-        "domain_suffix": [
-          ".mcdn.bilivideo.cn",
-          ".szbdyd.com"
+    "log": {
+        "level": "info",
+        "timestamp": false
+    },
+    "dns": {
+        "servers": [
+            {
+                "tag": "dns_proxy",
+                "address": "h3://1.1.1.1/dns-query",
+                "address_resolver": "dns_resolver",
+                "strategy": "prefer_ipv4",
+                "detour": "proxy"
+            },
+            {
+                "tag": "dns_direct",
+                "address": "local",
+                "strategy": "prefer_ipv4",
+                "detour": "direct"
+            },
+            {
+                "tag": "dns_resolver",
+                "address": "local",
+                "detour": "direct",
+                "strategy": "prefer_ipv4"
+            },
+            {
+                "tag": "dns_success",
+                "address": "rcode://success"
+            },
+            {
+                "tag": "dns_refused",
+                "address": "rcode://refused"
+            },
+            {
+                "tag": "dns_fakeip",
+                "address": "fakeip"
+            }
         ],
-        "domain_regex": [
-          "cn-[a-zA-Z0-9-]+\\.bilivideo\\.com",
-          "[a-zA-Z0-9-]+-pcdn-[a-zA-Z0-9-]+\\.biliapi\\.net"
+        "rules": [
+            {
+                "outbound": "any",
+                "server": "dns_resolver"
+            },
+            {
+                "rule_set": "BlockHttpDNS",
+                "rule_set": "geosite-category-ads-all",
+                "domain_suffix": [
+                    ".mcdn.bilivideo.cn",
+                    ".szbdyd.com"
+                ],
+                "domain_regex": [
+                    "cn-[a-zA-Z0-9-]+\\.bilivideo\\.com",
+                    "[a-zA-Z0-9-]+-pcdn-[a-zA-Z0-9-]+\\.biliapi\\.net"
+                ],
+                "server": "dns_success",
+                "disable_cache": true
+            },
+            {
+                "rule_set": "geosite-geolocation-!cn",
+                "query_type": [
+                    "A",
+                    "AAAA"
+                ],
+                "server": "dns_fakeip"
+            },
+            {
+                "rule_set": "geosite-geolocation-!cn",
+                "query_type": [
+                    "CNAME"
+                ],
+                "server": "dns_proxy"
+            },
+            {
+                "query_type": [
+                    "A",
+                    "AAAA",
+                    "CNAME"
+                ],
+                "invert": true,
+                "server": "dns_refused",
+                "disable_cache": true
+            }
         ],
-        "server": "dns_success",
-        "disable_cache": true
-      },
-      {
-        "rule_set": "geosite-geolocation-!cn",
-        "query_type": [
-          "A",
-          "AAAA"
-        ],
-        "server": "dns_fakeip"
-      },
-      {
-        "rule_set": "geosite-geolocation-!cn",
-        "query_type": [
-          "CNAME"
-        ],
-        "server": "dns_proxy"
-      },
-      {
-        "query_type": [
-          "A",
-          "AAAA",
-          "CNAME"
-        ],
-        "invert": true,
-        "server": "dns_refused",
-        "disable_cache": true
-      }
-    ],
-    "final": "dns_direct",
-    "independent_cache": true,
-    "fakeip": {
-      "enabled": true,
-      "inet4_range": "198.18.0.0/15",
-      "inet6_range": "fc00::/18"
-    }
-  },
-  "route": {
-    "rule_set": [
-      {
-        "tag": "BlockHttpDNS",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/bm7/BlockHttpDNS.srs",
-        "download_detour": "proxy"
-      },
-      {
-        "tag": "geosite-category-ads-all",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ads-all.srs",
-        "download_detour": "proxy"
-      },
-      {
-        "tag": "geosite-geolocation-!cn",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
-        "download_detour": "proxy"
-      },
-      {
-        "tag": "geoip-cn",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
-        "download_detour": "proxy"
-      },
-      {
-        "tag": "geosite-steam@cn",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-steam@cn.srs",
-        "download_detour": "proxy"
-      },
-      {
-        "tag": "geosite-openai",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-openai.srs",
-        "download_detour": "proxy"
-      },
-      {
-        "tag": "geosite-anthropic",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-anthropic.srs",
-        "download_detour": "proxy"
-      },
-      {
-        "tag": "geosite-bing",
-        "type": "remote",
-        "format": "binary",
-        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-bing.srs",
-        "download_detour": "proxy"
-      }
-    ],
-    "rules": [
-      {
-        "protocol": "dns",
-        "outbound": "dns-out"
-      },
-      {
-        "rule_set": "BlockHttpDNS",
-        "rule_set": "geosite-category-ads-all",
-        "domain_suffix": [
-          ".mcdn.bilivideo.cn",
-          ".szbdyd.com"
-        ],
-        "domain_regex": [
-          "cn-[a-zA-Z0-9-]+\\.bilivideo\\.com",
-          "[a-zA-Z0-9-]+-pcdn-[a-zA-Z0-9-]+\\.biliapi\\.net"
-        ],
-        "outbound": "block"
-      },
-      {
-        "rule_set": "geosite-steam@cn",
-        "domain": "time.is",
-        "domain_keyword": [
-          "mikuclub",
-          "hikarifield",
-          "wenku8",
-          "lightnovel"
-        ],
-        "outbound": "direct"
-      },
-      {
+        "final": "dns_direct",
+        "independent_cache": true,
+        "fakeip": {
+            "enabled": true,
+            "inet4_range": "198.18.0.0/15",
+            "inet6_range": "fc00::/18"
+        }
+    },
+    "route": {
         "rule_set": [
-          "geosite-anthropic",
-          "geosite-bing",
-          "geosite-openai"
+            {
+                "tag": "BlockHttpDNS",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/sing/bm7/BlockHttpDNS.srs",
+                "download_detour": "proxy"
+            },
+            {
+                "tag": "geosite-category-ads-all",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-category-ads-all.srs",
+                "download_detour": "proxy"
+            },
+            {
+                "tag": "geosite-geolocation-!cn",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
+                "download_detour": "proxy"
+            },
+            {
+                "tag": "geoip-cn",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
+                "download_detour": "proxy"
+            },
+            {
+                "tag": "geosite-steam@cn",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-steam@cn.srs",
+                "download_detour": "proxy"
+            },
+            {
+                "tag": "geosite-openai",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-openai.srs",
+                "download_detour": "proxy"
+            },
+            {
+                "tag": "geosite-anthropic",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-anthropic.srs",
+                "download_detour": "proxy"
+            },
+            {
+                "tag": "geosite-bing",
+                "type": "remote",
+                "format": "binary",
+                "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-bing.srs",
+                "download_detour": "proxy"
+            }
         ],
-        "outbound": "美国节点"
-      },
-      {
-        "rule_set": "geosite-geolocation-!cn",
-        "outbound": "proxy"
-      },
-      {
-        "rule_set": "geoip-cn",
-        "outbound": "direct"
-      },
-      {
-        "ip_is_private": true,
-        "outbound": "direct"
-      }
+        "rules": [
+            {
+                "protocol": "dns",
+                "outbound": "dns-out"
+            },
+            {
+                "rule_set": "BlockHttpDNS",
+                "rule_set": "geosite-category-ads-all",
+                "domain_suffix": [
+                    ".mcdn.bilivideo.cn",
+                    ".szbdyd.com"
+                ],
+                "domain_regex": [
+                    "cn-[a-zA-Z0-9-]+\\.bilivideo\\.com",
+                    "[a-zA-Z0-9-]+-pcdn-[a-zA-Z0-9-]+\\.biliapi\\.net"
+                ],
+                "outbound": "block"
+            },
+            {
+                "rule_set": "geosite-steam@cn",
+                "domain": "time.is",
+                "domain_keyword": [
+                    "mikuclub",
+                    "hikarifield",
+                    "wenku8",
+                    "lightnovel"
+                ],
+                "outbound": "direct"
+            },
+            {
+                "rule_set": [
+                    "geosite-anthropic",
+                    "geosite-bing",
+                    "geosite-openai"
+                ],
+                "outbound": "美国节点"
+            },
+            {
+                "rule_set": "geosite-geolocation-!cn",
+                "outbound": "proxy"
+            },
+            {
+                "rule_set": "geoip-cn",
+                "outbound": "direct"
+            },
+            {
+                "ip_is_private": true,
+                "outbound": "direct"
+            }
+        ],
+        "final": "proxy",
+        "auto_detect_interface": true
+    },
+    "inbounds": [
+        {
+            "type": "tun",
+            "tag": "tun-in",
+            "inet4_address": "172.16.0.1/30",
+            "inet6_address": "fd00::1/126",
+            "mtu": 1492,
+            "auto_route": true,
+            "strict_route": true,
+            "stack": "mixed",
+            "sniff": true,
+            "sniff_override_destination": false
+        }
     ],
-    "final": "proxy",
-    "auto_detect_interface": true
-  },
-  "inbounds": [
-    {
-      "type": "tun",
-      "tag": "tun-in",
-      "inet4_address": "172.16.0.1/30",
-      "inet6_address": "fd00::1/126",
-      "mtu": 1492,
-      "auto_route": true,
-      "strict_route": true,
-      "stack": "mixed",
-      "sniff": true,
-      "sniff_override_destination": false
+    "outbounds": [
+        {
+            "type": "selector",
+            "tag": "proxy",
+            "outbounds": [
+                "自动选择",
+                "手动选择",
+                "direct"
+            ]
+        },
+        {
+            "type": "direct",
+            "tag": "direct"
+        },
+        {
+            "type": "block",
+            "tag": "block"
+        },
+        {
+            "type": "dns",
+            "tag": "dns-out"
+        },
+        {
+            "tag": "美国节点",
+            "type": "urltest",
+            "outbounds": [
+                "{all}"
+            ],
+            "filter": [
+                {
+                    "action": "include",
+                    "keywords": [
+                        "🇺🇸|US|us|美国|美|United States"
+                    ]
+                }
+            ]
+        },
+        {
+            "tag": "自动选择",
+            "type": "urltest",
+            "outbounds": [
+                "{all}"
+            ]
+        },
+        {
+            "tag": "手动选择",
+            "type": "selector",
+            "outbounds": [
+                "{all}"
+            ]
+        }
+    ],
+    "experimental": {
+        "cache_file": {
+            "enabled": true,
+            "path": "cache.db",
+            "store_fakeip": true
+        },
+        "clash_api": {
+            "external_controller": "127.0.0.1:9090"
+        }
     }
-  ],
-  "outbounds": [
-    {
-      "type": "selector",
-      "tag": "proxy",
-      "outbounds": [
-        "自动选择",
-        "手动选择",
-        "direct"
-      ]
-    },
-    {
-      "type": "direct",
-      "tag": "direct"
-    },
-    {
-      "type": "block",
-      "tag": "block"
-    },
-    {
-      "type": "dns",
-      "tag": "dns-out"
-    },
-    {
-      "tag": "美国节点",
-      "type": "urltest",
-      "outbounds": ["{all}"],
-      "filter":[
-        {"action":"include","keywords":["🇺🇸|US|us|美国|美|United States"]}
-      ]
-    },
-    {
-      "tag": "自动选择",
-      "type": "urltest",
-      "outbounds": ["{all}"]
-    },
-    {
-      "tag": "手动选择",
-      "type": "selector",
-      "outbounds": ["{all}"]
-    }
-  ],
-  "experimental": {
-    "cache_file": {
-      "enabled": true,
-      "path": "cache.db",
-      "store_fakeip": true
-    },
-    "clash_api": {
-      "external_controller": "127.0.0.1:9090"
-    }
-  }
 }
