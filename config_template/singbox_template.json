@@ -251,12 +251,18 @@
     {
       "tag": "自动选择",
       "type": "urltest",
-      "outbounds": "{all}"
+      "outbounds": "{all}",
+      "filter":[
+        {"action":"include"}
+      ]
     },
     {
       "tag": "手动选择",
       "type": "selector",
-      "outbounds": "{all}"
+      "outbounds": "{all}",
+      "filter":[
+        {"action":"include"}
+      ]
     }
   ],
   "experimental": {
